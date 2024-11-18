@@ -14,6 +14,7 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/sfpro_bold"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="TodoApp"/>
 

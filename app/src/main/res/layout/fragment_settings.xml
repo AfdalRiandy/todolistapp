@@ -43,6 +43,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="@font/sfpro_bold"
                         android:text="Account Settings"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
@@ -57,6 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:fontFamily="@font/sfpro_reguler"
                     android:text="Manage your profile information"
                     android:textColor="@android:color/darker_gray"/>
             </LinearLayout>
@@ -94,6 +96,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="@font/sfpro_bold"
                         android:text="About App"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
@@ -109,6 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Learn more about our app"
+                    android:fontFamily="@font/sfpro_reguler"
                     android:textColor="@android:color/darker_gray"/>
             </LinearLayout>
 
@@ -119,6 +123,7 @@
             android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/sfpro_bold"
             android:text="Logout"
             android:layout_marginTop="16dp"
             app:icon="@drawable/ic_logout"

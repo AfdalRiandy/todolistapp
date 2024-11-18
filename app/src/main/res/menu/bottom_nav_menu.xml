@@ -3,13 +3,16 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
+        android:fontFamily="@font/sfpro_bold"
         android:title="Home"/>
     <item
         android:id="@+id/nav_calendar"
         android:icon="@drawable/ic_calendar"
+        android:fontFamily="@font/sfpro_bold"
         android:title="Calendar"/>
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
+        android:fontFamily="@font/sfpro_bold"
         android:title="Settings"/>
 </menu>

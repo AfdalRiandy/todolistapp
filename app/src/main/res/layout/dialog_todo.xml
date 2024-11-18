@@ -12,6 +12,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/todoEditText"
+            android:fontFamily="@font/sfpro_reguler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
@@ -24,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:fontFamily="@font/sfpro_bold"
         android:text="Select Due Date" />
 
     <TextView
