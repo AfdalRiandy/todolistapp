@@ -39,11 +39,12 @@ class TodoAdapter(
         holder.todoText.text = todo.task
         holder.checkBox.isChecked = todo.isCompleted
 
-        // Set due date text
+        // Set due date and time text
+        val dateStringBuilder = StringBuilder()
+
         todo.dueDate?.let { date ->
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-            holder.dueDateText.text = dateFormat.format(Date(date))
-            holder.dueDateText.visibility = View.VISIBLE
+            dateStringBuilder.append(dateFormat.format(Date(date)))
 
             // Change text color based on due date
             val today = Calendar.getInstance().apply {
@@ -58,11 +59,24 @@ class TodoAdapter(
                 date == today -> holder.dueDateText.setTextColor(context.getColor(R.color.orange)) // today
                 else -> holder.dueDateText.setTextColor(context.getColor(R.color.gray)) // future
             }
-        } ?: run {
-            holder.dueDateText.visibility = View.GONE // Hide due date if not set
         }
 
-        // Change the text color if the todo is completed
+        todo.dueTime?.let { time ->
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            if (dateStringBuilder.isNotEmpty()) {
+                dateStringBuilder.append(" ") // Add space between date and time
+            }
+            dateStringBuilder.append(timeFormat.format(Date(time)))
+        }
+
+        if (dateStringBuilder.isNotEmpty()) {
+            holder.dueDateText.text = dateStringBuilder.toString()
+            holder.dueDateText.visibility = View.VISIBLE
+        } else {
+            holder.dueDateText.visibility = View.GONE // Hide if no date or time is set
+        }
+
+        // Change text color if the todo is completed
         if (todo.isCompleted) {
             holder.todoText.setTextColor(context.getColor(android.R.color.darker_gray))
             holder.dueDateText.setTextColor(context.getColor(android.R.color.darker_gray)) // Match the due date color
@@ -84,6 +98,7 @@ class TodoAdapter(
             onDeleteClick(todo)
         }
     }
+
 
     override fun getItemCount() = todos.size
 

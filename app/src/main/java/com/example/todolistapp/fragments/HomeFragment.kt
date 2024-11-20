@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
@@ -80,32 +81,45 @@ class HomeFragment : Fragment() {
 
         val todoEditText = dialogView.findViewById<TextInputEditText>(R.id.todoEditText)
         val datePickerButton = dialogView.findViewById<MaterialButton>(R.id.datePickerButton)
+        val timePickerButton = dialogView.findViewById<MaterialButton>(R.id.timePickerButton) // New button for time
         val selectedDateText = dialogView.findViewById<TextView>(R.id.selectedDateText)
+        val selectedTimeText = dialogView.findViewById<TextView>(R.id.selectedTimeText) // New text for time
 
         var selectedDate: Long? = todo?.dueDate
+        var selectedTime: Long? = todo?.dueTime // Initialize with existing value if available
 
-        // Function to update the displayed date text
+        // Update displayed date
         fun updateDateText() {
             if (selectedDate != null) {
                 val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                selectedDateText.text = "Due: ${dateFormat.format(Date(selectedDate!!))}"
+                selectedDateText.text = "Due Date: ${dateFormat.format(Date(selectedDate!!))}"
                 selectedDateText.visibility = View.VISIBLE
             } else {
                 selectedDateText.visibility = View.GONE
             }
         }
 
+        // Update displayed time
+        fun updateTimeText() {
+            if (selectedTime != null) {
+                val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                selectedTimeText.text = "Due Time: ${timeFormat.format(Date(selectedTime!!))}"
+                selectedTimeText.visibility = View.VISIBLE
+            } else {
+                selectedTimeText.visibility = View.GONE
+            }
+        }
+
         todo?.let {
             todoEditText.setText(it.task)
             updateDateText()
+            updateTimeText()
         }
 
         // Open DatePickerDialog to select due date
         datePickerButton.setOnClickListener {
             val calendar = Calendar.getInstance()
-            selectedDate?.let { date ->
-                calendar.timeInMillis = date
-            }
+            selectedDate?.let { date -> calendar.timeInMillis = date }
 
             DatePickerDialog(
                 requireContext(),
@@ -120,6 +134,25 @@ class HomeFragment : Fragment() {
             ).show()
         }
 
+        // Open TimePickerDialog to select due time
+        timePickerButton.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            selectedTime?.let { time -> calendar.timeInMillis = time }
+
+            TimePickerDialog(
+                requireContext(),
+                { _, hourOfDay, minute ->
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    calendar.set(Calendar.MINUTE, minute)
+                    selectedTime = calendar.timeInMillis
+                    updateTimeText()
+                },
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true
+            ).show()
+        }
+
         AlertDialog.Builder(requireContext())
             .setTitle(if (todo == null) "Add Todo" else "Edit Todo")
             .setView(dialogView)
@@ -127,9 +160,9 @@ class HomeFragment : Fragment() {
                 val task = todoEditText.text.toString()
                 if (task.isNotEmpty()) {
                     if (todo == null) {
-                        dbHelper.insertTodo(Todo(userId = userId, task = task, dueDate = selectedDate))
+                        dbHelper.insertTodo(Todo(userId = userId, task = task, dueDate = selectedDate, dueTime = selectedTime))
                     } else {
-                        dbHelper.updateTodo(todo.copy(task = task, dueDate = selectedDate))
+                        dbHelper.updateTodo(todo.copy(task = task, dueDate = selectedDate, dueTime = selectedTime))
                     }
                     loadTodos()
                 } else {
@@ -139,6 +172,7 @@ class HomeFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .show()
     }
+
 
     private fun loadTodos() {
         val todos = dbHelper.getAllTodosForUser(userId)

@@ -56,6 +56,7 @@
                 app:tint="#E74C3C" />
         </LinearLayout>
 
+        <!-- Due Date Text -->
         <TextView
             android:id="@+id/dueDateText"
             android:fontFamily="@font/sfpro_reguler"
@@ -67,6 +68,18 @@
             android:textColor="#666666"
             android:textSize="14sp"
             app:drawableStartCompat="@drawable/ic_calendar" />
+
+        <!-- Due Time Text -->
+        <TextView
+            android:id="@+id/dueTimeText"
+            android:fontFamily="@font/sfpro_reguler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/ic_time" />
 
     </LinearLayout>
 

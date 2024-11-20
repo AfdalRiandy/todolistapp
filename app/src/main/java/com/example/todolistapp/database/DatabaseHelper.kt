@@ -25,6 +25,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_TASK = "task"
         private const val COLUMN_IS_COMPLETED = "is_completed"
         private const val COLUMN_DUE_DATE = "due_date" // New column for due date
+        private const val COLUMN_DUE_TIME = "due_time" // New column for due time
+
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -40,15 +42,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         // Create todos table with foreign key and due_date
         val createTodosTable = """
-            CREATE TABLE $TABLE_TODOS (
-                $COLUMN_TODO_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_USER_ID_FK INTEGER NOT NULL,
-                $COLUMN_TASK TEXT NOT NULL,
-                $COLUMN_DUE_DATE INTEGER,  -- Store due date as long (timestamp)
-                $COLUMN_IS_COMPLETED INTEGER DEFAULT 0,
-                FOREIGN KEY($COLUMN_USER_ID_FK) REFERENCES $TABLE_USERS($COLUMN_USER_ID)
-            )
-        """.trimIndent()
+        CREATE TABLE $TABLE_TODOS (
+            $COLUMN_TODO_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_USER_ID_FK INTEGER NOT NULL,
+            $COLUMN_TASK TEXT NOT NULL,
+            $COLUMN_DUE_DATE INTEGER,  -- Store due date as long (timestamp)
+            $COLUMN_DUE_TIME INTEGER,  -- Store due time as long (timestamp)
+            $COLUMN_IS_COMPLETED INTEGER DEFAULT 0,
+            FOREIGN KEY($COLUMN_USER_ID_FK) REFERENCES $TABLE_USERS($COLUMN_USER_ID)
+        )
+    """.trimIndent()
+
 
         db.execSQL(createUsersTable)
         db.execSQL(createTodosTable)
@@ -56,8 +60,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 3) {
-            // Add the due_date column if upgrading
-            db.execSQL("ALTER TABLE $TABLE_TODOS ADD COLUMN $COLUMN_DUE_DATE INTEGER")
+            // Add the due_time column if upgrading
+            db.execSQL("ALTER TABLE $TABLE_TODOS ADD COLUMN $COLUMN_DUE_TIME INTEGER")
         }
     }
 
@@ -101,10 +105,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_USER_ID_FK, todo.userId)
             put(COLUMN_TASK, todo.task)
             put(COLUMN_DUE_DATE, todo.dueDate)  // Storing due date
+            put(COLUMN_DUE_TIME, todo.dueTime)  // Storing due time
             put(COLUMN_IS_COMPLETED, if (todo.isCompleted) 1 else 0)
         }
         return db.insert(TABLE_TODOS, null, values)
     }
+
 
     fun getAllTodosForUser(userId: Int): List<Todo> {
         val todos = mutableListOf<Todo>()
@@ -115,7 +121,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             "$COLUMN_USER_ID_FK = ?",
             arrayOf(userId.toString()),
             null, null,
-            "$COLUMN_DUE_DATE ASC, $COLUMN_TODO_ID DESC"  // Sorting by due date and task ID
+            "$COLUMN_DUE_DATE ASC, $COLUMN_DUE_TIME ASC, $COLUMN_TODO_ID DESC"
         )
 
         cursor.use {
@@ -126,7 +132,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                         userId = it.getInt(it.getColumnIndexOrThrow(COLUMN_USER_ID_FK)),
                         task = it.getString(it.getColumnIndexOrThrow(COLUMN_TASK)),
                         dueDate = if (it.isNull(it.getColumnIndexOrThrow(COLUMN_DUE_DATE))) null
-                        else it.getLong(it.getColumnIndexOrThrow(COLUMN_DUE_DATE)), // Handling null for due date
+                        else it.getLong(it.getColumnIndexOrThrow(COLUMN_DUE_DATE)),
+                        dueTime = if (it.isNull(it.getColumnIndexOrThrow(COLUMN_DUE_TIME))) null
+                        else it.getLong(it.getColumnIndexOrThrow(COLUMN_DUE_TIME)),
                         isCompleted = it.getInt(it.getColumnIndexOrThrow(COLUMN_IS_COMPLETED)) == 1
                     )
                 )
@@ -134,6 +142,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         return todos
     }
+
 
     fun updateTodo(todo: Todo): Int {
         val db = writableDatabase

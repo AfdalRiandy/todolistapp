@@ -5,6 +5,7 @@ data class Todo(
     var userId: Int,
     var task: String,
     var dueDate: Long? = null,
+    var dueTime: Long? = null, // New field for due time
     var isCompleted: Boolean = false
-
 )
+

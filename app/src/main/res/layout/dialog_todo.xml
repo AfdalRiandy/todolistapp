@@ -26,13 +26,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/sfpro_bold"
-        android:text="Select Due Date" />
+        android:text="Pilih Tanggal" />
 
     <TextView
         android:id="@+id/selectedDateText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/timePickerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/sfpro_bold"
+        android:text="Pilih Waktu" />
+
+    <TextView
+        android:id="@+id/selectedTimeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:textAlignment="center"
         android:textSize="16sp"
         android:visibility="gone" />
