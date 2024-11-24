@@ -50,7 +50,7 @@ class CalendarFragment : Fragment() {
         setupRecyclerView()
         updateSelectedDateText()
         loadTodosForDate(selectedDate)
-        loadAllTodoDates()
+        loadAllTodoDates() // Memuat semua tanggal dengan todo
     }
 
     private fun setupCalendarView() {
