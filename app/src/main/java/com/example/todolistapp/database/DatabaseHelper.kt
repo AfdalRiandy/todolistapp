@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.Calendar
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -216,15 +217,89 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         )
     }
 
+
+    fun getDistinctTodoDates(userId: Int, startDate: Long, endDate: Long): List<Long> {
+        val dates = mutableListOf<Long>()
+        val db = readableDatabase
+
+        val query = """
+        SELECT DISTINCT $COLUMN_DUE_DATE 
+        FROM $TABLE_TODOS 
+        WHERE $COLUMN_USER_ID_FK = ? 
+        AND $COLUMN_DUE_DATE >= ? 
+        AND $COLUMN_DUE_DATE <= ? 
+        ORDER BY $COLUMN_DUE_DATE ASC
+    """.trimIndent()
+
+        val cursor = db.rawQuery(
+            query,
+            arrayOf(userId.toString(), startDate.toString(), endDate.toString())
+        )
+
+        cursor.use {
+            while (it.moveToNext()) {
+                val dueDate = it.getLong(0)
+                if (!it.isNull(0)) {
+                    // Normalize the date to start of day
+                    val calendar = Calendar.getInstance().apply {
+                        timeInMillis = dueDate
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    dates.add(calendar.timeInMillis)
+                }
+            }
+        }
+        return dates
+    }
+
+    // Optional: Add a method to check if a specific date has todos
+    fun hasTasksForDate(userId: Int, date: Long): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = date
+
+        // Set time to start of day
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfDay = calendar.timeInMillis
+
+        // Set time to end of day
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val endOfDay = calendar.timeInMillis
+
+        val db = readableDatabase
+        val cursor = db.query(
+            TABLE_TODOS,
+            arrayOf("COUNT(*)"),
+            "$COLUMN_USER_ID_FK = ? AND $COLUMN_DUE_DATE >= ? AND $COLUMN_DUE_DATE <= ?",
+            arrayOf(userId.toString(), startOfDay.toString(), endOfDay.toString()),
+            null,
+            null,
+            null
+        )
+
+        return cursor.use {
+            it.moveToFirst()
+            it.getInt(0) > 0
+        }
+    }
+
     fun getTodosForDateRange(userId: Int, startDate: Long, endDate: Long): List<Todo> {
         val todos = mutableListOf<Todo>()
         val db = readableDatabase
 
         val selection = """
-            $COLUMN_USER_ID_FK = ? AND 
-            $COLUMN_DUE_DATE >= ? AND 
-            $COLUMN_DUE_DATE <= ?
-        """.trimIndent()
+        $COLUMN_USER_ID_FK = ? AND 
+        $COLUMN_DUE_DATE >= ? AND 
+        $COLUMN_DUE_DATE <= ?
+    """.trimIndent()
 
         val selectionArgs = arrayOf(
             userId.toString(),
@@ -239,7 +314,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             selectionArgs,
             null,
             null,
-            "$COLUMN_DUE_DATE ASC, $COLUMN_TODO_ID DESC"
+            "$COLUMN_DUE_DATE ASC, $COLUMN_DUE_TIME ASC, $COLUMN_TODO_ID DESC"
         )
 
         cursor.use {
@@ -251,6 +326,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                         task = it.getString(it.getColumnIndexOrThrow(COLUMN_TASK)),
                         dueDate = if (!it.isNull(it.getColumnIndexOrThrow(COLUMN_DUE_DATE)))
                             it.getLong(it.getColumnIndexOrThrow(COLUMN_DUE_DATE))
+                        else null,
+                        dueTime = if (!it.isNull(it.getColumnIndexOrThrow(COLUMN_DUE_TIME)))
+                            it.getLong(it.getColumnIndexOrThrow(COLUMN_DUE_TIME))
                         else null,
                         isCompleted = it.getInt(it.getColumnIndexOrThrow(COLUMN_IS_COMPLETED)) == 1
                     )

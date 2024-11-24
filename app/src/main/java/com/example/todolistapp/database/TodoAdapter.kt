@@ -24,6 +24,7 @@ class TodoAdapter(
         val dueDateText: TextView = view.findViewById(R.id.dueDateText)
         val editButton: ImageButton = view.findViewById(R.id.editButton)
         val deleteButton: ImageButton = view.findViewById(R.id.deleteButton)
+        val dueTimeText: TextView = view.findViewById(R.id.dueTimeText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
@@ -39,12 +40,10 @@ class TodoAdapter(
         holder.todoText.text = todo.task
         holder.checkBox.isChecked = todo.isCompleted
 
-        // Set due date and time text
-        val dateStringBuilder = StringBuilder()
-
+        // Set due date text
         todo.dueDate?.let { date ->
             val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-            dateStringBuilder.append(dateFormat.format(Date(date)))
+            holder.dueDateText.text = dateFormat.format(Date(date))
 
             // Change text color based on due date
             val today = Calendar.getInstance().apply {
@@ -59,27 +58,26 @@ class TodoAdapter(
                 date == today -> holder.dueDateText.setTextColor(context.getColor(R.color.orange)) // today
                 else -> holder.dueDateText.setTextColor(context.getColor(R.color.gray)) // future
             }
+
+            holder.dueDateText.visibility = View.VISIBLE
+        } ?: run {
+            holder.dueDateText.visibility = View.GONE // Hide if no due date is set
         }
 
+        // Set due time text
         todo.dueTime?.let { time ->
             val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            if (dateStringBuilder.isNotEmpty()) {
-                dateStringBuilder.append(" ") // Add space between date and time
-            }
-            dateStringBuilder.append(timeFormat.format(Date(time)))
-        }
-
-        if (dateStringBuilder.isNotEmpty()) {
-            holder.dueDateText.text = dateStringBuilder.toString()
-            holder.dueDateText.visibility = View.VISIBLE
-        } else {
-            holder.dueDateText.visibility = View.GONE // Hide if no date or time is set
+            holder.dueTimeText.text = timeFormat.format(Date(time))
+            holder.dueTimeText.visibility = View.VISIBLE
+        } ?: run {
+            holder.dueTimeText.visibility = View.GONE // Hide if no due time is set
         }
 
         // Change text color if the todo is completed
         if (todo.isCompleted) {
             holder.todoText.setTextColor(context.getColor(android.R.color.darker_gray))
-            holder.dueDateText.setTextColor(context.getColor(android.R.color.darker_gray)) // Match the due date color
+            holder.dueDateText.setTextColor(context.getColor(android.R.color.darker_gray)) // Match due date color
+            holder.dueTimeText.setTextColor(context.getColor(android.R.color.darker_gray)) // Match due time color
         } else {
             holder.todoText.setTextColor(context.getColor(R.color.black))
         }

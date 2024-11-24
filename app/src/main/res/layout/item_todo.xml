@@ -5,7 +5,9 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:padding="8dp">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,30 +58,56 @@
                 app:tint="#E74C3C" />
         </LinearLayout>
 
-        <!-- Due Date Text -->
-        <TextView
-            android:id="@+id/dueDateText"
-            android:fontFamily="@font/sfpro_reguler"
-            android:layout_width="wrap_content"
+        <!-- Due Date Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="4dp"
-            android:drawablePadding="4dp"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            app:drawableStartCompat="@drawable/ic_calendar" />
+            android:layout_marginLeft="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <!-- Due Time Text -->
-        <TextView
-            android:id="@+id/dueTimeText"
-            android:fontFamily="@font/sfpro_reguler"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_calendar"
+                android:tint="#666666" />
+
+            <TextView
+                android:id="@+id/dueDateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#666666"
+                android:textSize="14sp"
+                android:fontFamily="@font/sfpro_reguler" />
+        </LinearLayout>
+
+        <!-- Due Time Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="8dp"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            app:drawableStartCompat="@drawable/ic_time" />
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_time"
+                android:tint="#666666" />
+
+            <TextView
+                android:id="@+id/dueTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#666666"
+                android:textSize="14sp"
+                android:fontFamily="@font/sfpro_reguler" />
+        </LinearLayout>
+
 
     </LinearLayout>
 
